@@ -1,0 +1,30 @@
+name = "user-analytics-dashboard"
+type = "javascript"
+route = ""
+zone_id = ""
+usage_model = ""
+compatibility_flags = []
+workers_dev = true
+compatibility_date = "2023-10-30"
+
+[site]
+source = "./out"
+bucket = "./out"
+entry-point = "."
+
+[build]
+command = "npm run build"
+upload.format = "service-worker"
+
+[build.upload]
+format = "pages"
+
+[env.production]
+kv_namespaces = [
+  { binding = "KV_ANALYTICS", id = "" }
+]
+
+[env.staging]
+kv_namespaces = [
+  { binding = "KV_ANALYTICS", id = "" }
+]
