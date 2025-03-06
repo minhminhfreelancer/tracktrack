@@ -1,0 +1,43 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Deploy to Cloudflare Pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Copy Cloudflare Functions
+        run: |
+          mkdir -p .cloudflare
+          cp -r cloudflare/functions .cloudflare/
+
+      - name: Deploy to Cloudflare Pages
+        id: cloudflare-pages-deploy
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: tracktrack
+          directory: .cloudflare/functions
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

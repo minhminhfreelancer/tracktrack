@@ -106,7 +106,7 @@ export default function ScriptPage() {
     var trackingOptions = ${JSON.stringify(enabledOptions)};
     var scriptElement = document.createElement('script');
     scriptElement.async = true;
-    scriptElement.src = 'https://tracktrack.pages.dev/tracker.js?id=YOUR_SITE_ID&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
+    scriptElement.src = 'https://tracktrack.pages.dev/tracker.js?id=' + encodeURIComponent(window.location.hostname) + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
     document.head.appendChild(scriptElement);
   })();
 </script>`;
