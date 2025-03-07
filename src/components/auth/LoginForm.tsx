@@ -35,9 +35,12 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
     }));
   };
 
+  const [error, setError] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
       // Here you would implement the actual login logic
@@ -46,12 +49,25 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // Check if email is verified (this would be part of your API response)
+      const isEmailVerified = true; // For demo purposes, change to false to test the error
+
+      if (!isEmailVerified) {
+        setError(
+          "Email chưa được xác thực. Vui lòng kiểm tra hộp thư đến của bạn và nhấp vào liên kết xác thực.",
+        );
+        return;
+      }
+
       // Redirect to dashboard after successful login
       window.location.href = "/dashboard";
 
       onSuccess();
     } catch (error) {
       console.error("Login error:", error);
+      setError(
+        "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu của bạn.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +80,11 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
         <CardDescription>Nhập thông tin đăng nhập của bạn</CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="p-3 mb-4 text-sm bg-red-50 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -101,13 +122,23 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
             </div>
           </div>
 
-          <div className="flex justify-end">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-primary hover:underline"
-            >
-              Quên mật khẩu?
-            </Link>
+          <div className="flex justify-between items-center">
+            <div className="text-sm">
+              <Link
+                href="/verify-email"
+                className="text-primary hover:underline"
+              >
+                Gửi lại email xác thực
+              </Link>
+            </div>
+            <div>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
