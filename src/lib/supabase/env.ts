@@ -1,4 +1,4 @@
-// Fallback values for when environment variables are not available
-export const SUPABASE_URL = "https://pedantic-black9-vq9cg.supabase.co";
+// Supabase configuration
+export const SUPABASE_URL = "https://ogwqwnsykzufzsablqpg.supabase.co";
 export const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlZGFudGljLWJsYWNrOS12cTljZyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzE3NTc0NTI1LCJleHAiOjIwMzMxNTA1MjV9.Yd-Oi-Ow-Oa-Oi-Ow-Oa-Oi-Ow-Oa-Oi-Ow-Oa";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nd3F3bnN5a3p1ZnpzYWJscXBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNTA1NjAsImV4cCI6MjA1NjgyNjU2MH0.E6Y3YhtfX0HICmHGH6TV_VVRR_dNexBw1yOPiCuXpDQ";
