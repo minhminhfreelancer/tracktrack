@@ -44,8 +44,11 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
 
     try {
       // Import dynamically to avoid SSR issues
-      const { getSupabaseClient } = await import("@/lib/supabase/client");
-      const supabase = getSupabaseClient();
+      const { createClient } = await import("@supabase/supabase-js");
+      const { SUPABASE_URL, SUPABASE_ANON_KEY } = await import(
+        "@/lib/supabase/env"
+      );
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       // Sign in with Supabase Auth
       const { data, error: signInError } =
