@@ -62,6 +62,7 @@ const RegisterForm = ({ onSuccess = () => {} }: RegisterFormProps) => {
             name: formData.name,
             website: formData.website || null,
           },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
