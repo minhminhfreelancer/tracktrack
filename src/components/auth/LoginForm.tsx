@@ -67,20 +67,36 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
         .single();
 
       if (userError || !userData) {
-        // Sign out if user doesn't exist in our database
-        await supabase.auth.signOut();
-        throw new Error(
-          "Tài khoản không tồn tại trong hệ thống. Vui lòng đăng ký mới.",
-        );
-      }
+        // Tạo user trong database nếu chưa tồn tại
+        const { error: insertError } = await supabase.from("users").insert({
+          id: data.user?.id,
+          email: data.user?.email,
+          name: data.user?.user_metadata?.name || null,
+          website: data.user?.user_metadata?.website || null,
+          email_verified: true,
+        });
 
-      if (!userData.email_verified) {
-        // Sign out if email is not verified
-        await supabase.auth.signOut();
-        setError(
-          "Email chưa được xác thực. Vui lòng kiểm tra hộp thư đến của bạn và nhấp vào liên kết xác thực.",
-        );
-        return;
+        if (insertError) {
+          await supabase.auth.signOut();
+          throw new Error(
+            "Không thể tạo hồ sơ người dùng. Vui lòng thử lại sau.",
+          );
+        }
+      } else if (!userData.email_verified) {
+        // Cập nhật trạng thái xác thực email
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({ email_verified: true })
+          .eq("id", data.user?.id);
+
+        if (updateError) {
+          // Sign out if email is not verified and can't update
+          await supabase.auth.signOut();
+          setError(
+            "Email chưa được xác thực. Vui lòng kiểm tra hộp thư đến của bạn và nhấp vào liên kết xác thực.",
+          );
+          return;
+        }
       }
 
       // Redirect to dashboard after successful login

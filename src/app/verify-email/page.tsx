@@ -49,12 +49,27 @@ function VerifyEmailContent() {
         } = await supabase.auth.getUser();
 
         if (user) {
+          // Thêm delay để đảm bảo user đã được tạo trong database
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
           const { error: updateError } = await supabase
             .from("users")
             .update({ email_verified: true })
             .eq("id", user.id);
 
-          if (updateError) throw updateError;
+          if (updateError) {
+            console.error("Error updating user:", updateError);
+            // Thử tạo user nếu chưa tồn tại
+            const { error: insertError } = await supabase.from("users").insert({
+              id: user.id,
+              email: user.email,
+              name: user.user_metadata?.name || null,
+              website: user.user_metadata?.website || null,
+              email_verified: true,
+            });
+
+            if (insertError) throw insertError;
+          }
         }
 
         setVerificationStatus("success");
