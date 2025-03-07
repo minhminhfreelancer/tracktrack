@@ -1,7 +1,7 @@
 export const MAIN_DOMAIN =
-  process.env.NEXT_PUBLIC_MAIN_DOMAIN || "quanlythoigian.io.vn";
+  process.env.NEXT_PUBLIC_MAIN_DOMAIN || "tracktrack-dun.vercel.app";
 export const API_DOMAIN =
-  process.env.NEXT_PUBLIC_API_DOMAIN || "tracktrack.pages.dev";
+  process.env.NEXT_PUBLIC_API_DOMAIN || "tracktrack-dun.vercel.app";
 
 export const isMainDomain = () => {
   if (typeof window === "undefined") return false;

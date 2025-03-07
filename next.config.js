@@ -10,14 +10,14 @@ const nextConfig = {
         source: "/api/:path*",
         destination:
           process.env.NODE_ENV === "production"
-            ? "https://tracktrack.pages.dev/api/:path*"
+            ? "https://tracktrack-dun.vercel.app/api/:path*"
             : "/api/:path*",
       },
       {
         source: "/tracker.js",
         destination:
           process.env.NODE_ENV === "production"
-            ? "https://tracktrack.pages.dev/tracker.js"
+            ? "https://tracktrack-dun.vercel.app/tracker.js"
             : "/tracker.js",
       },
     ];

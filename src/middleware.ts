@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith("/reset-password")
     ) {
       return NextResponse.redirect(
-        new URL(`https://quanlythoigian.io.vn${pathname}`, request.url),
+        new URL(`https://tracktrack-dun.vercel.app${pathname}`, request.url),
       );
     }
 
@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
     // If trying to access API endpoints directly on main domain, redirect to API domain
     if (pathname.startsWith("/api/") && process.env.NODE_ENV === "production") {
       return NextResponse.redirect(
-        new URL(`https://tracktrack.pages.dev${pathname}`, request.url),
+        new URL(`https://tracktrack-dun.vercel.app${pathname}`, request.url),
       );
     }
   }
