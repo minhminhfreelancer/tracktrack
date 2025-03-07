@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/auth/AuthModal";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -10,6 +10,29 @@ export default function Home() {
   const [authModalTab, setAuthModalTab] = useState<
     "login" | "register" | "forgot-password"
   >("login");
+
+  // Check for existing session and clear it on homepage load
+  useEffect(() => {
+    const clearExistingSession = async () => {
+      try {
+        const { getSupabaseClient } = await import("@/lib/supabase/client");
+        const supabase = getSupabaseClient();
+
+        // Get current session
+        const { data } = await supabase.auth.getSession();
+
+        // If there's a session, sign out
+        if (data.session) {
+          await supabase.auth.signOut();
+          console.log("Existing session cleared");
+        }
+      } catch (error) {
+        console.error("Error clearing session:", error);
+      }
+    };
+
+    clearExistingSession();
+  }, []);
 
   const openAuthModal = (tab: "login" | "register" | "forgot-password") => {
     setAuthModalTab(tab);

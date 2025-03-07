@@ -56,14 +56,20 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
 
       if (signInError) throw signInError;
 
-      // Check if user exists and email is verified
+      // Check if user exists in our database (not just in auth)
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("email_verified")
+        .select("*")
         .eq("id", data.user?.id)
         .single();
 
-      if (userError) throw userError;
+      if (userError || !userData) {
+        // Sign out if user doesn't exist in our database
+        await supabase.auth.signOut();
+        throw new Error(
+          "Tài khoản không tồn tại trong hệ thống. Vui lòng đăng ký mới.",
+        );
+      }
 
       if (!userData.email_verified) {
         // Sign out if email is not verified
