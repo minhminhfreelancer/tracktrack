@@ -5,8 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ArrowLeft, BarChart3, Settings, User } from "lucide-react";
+import { ArrowLeft, BarChart3, Settings, User, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import {
+  TimeRangeSelector,
+  TimeRange,
+} from "@/components/dashboard/TimeRangeSelector";
+import { DateRange } from "react-day-picker";
 
 interface VisitorData {
   ip: string;
@@ -18,6 +23,12 @@ interface VisitorData {
   phoneClicks: number;
   zaloClicks: number;
   messengerClicks: number;
+  lastUpdated?: Date;
+}
+
+interface TimeRangeState {
+  type: TimeRange;
+  dateRange?: DateRange;
 }
 
 export default function Dashboard() {
@@ -31,27 +42,19 @@ export default function Dashboard() {
     phoneClicks: 23,
     zaloClicks: 15,
     messengerClicks: 8,
+    lastUpdated: new Date(),
   });
 
-  useEffect(() => {
-    // Simulate fetching user data
-    const fetchUserData = async () => {
-      // In a real app, this would be an API call
-      // For demo purposes, we'll use the default data
+  const [timeRange, setTimeRange] = useState<TimeRangeState>({
+    type: "realtime",
+    dateRange: {
+      from: new Date(new Date().getTime() - 30 * 60000), // 30 minutes ago
+      to: new Date(),
+    },
+  });
 
-      // Detect some real browser info
-      const browserInfo = navigator.userAgent;
-      const screenInfo = `${window.screen.width} x ${window.screen.height}`;
-
-      setUserData((prev) => ({
-        ...prev,
-        browser: browserInfo,
-        screenSize: screenInfo,
-      }));
-    };
-
-    fetchUserData();
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(timeRange.type === "realtime");
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,6 +78,62 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">Thống kê người dùng</h2>
+            {isLoading ? (
+              <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTimeRange({ ...timeRange })}
+                title="Làm mới dữ liệu"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <TimeRangeSelector
+              onTimeRangeChange={(newRange) => {
+                setTimeRange(newRange);
+                setAutoRefresh(newRange.type === "realtime");
+              }}
+            />
+
+            {timeRange.type === "realtime" && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-muted-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    className="mr-2"
+                  />
+                  Tự động làm mới
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {userData.lastUpdated && (
+          <div className="mb-6 text-sm text-muted-foreground">
+            Cập nhật lần cuối:{" "}
+            {userData.lastUpdated.toLocaleString("vi-VN", {
+              timeZone: "Asia/Bangkok",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            })}
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/4">
             <div className="space-y-4">
