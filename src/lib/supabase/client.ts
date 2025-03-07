@@ -1,11 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "./database.types";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./env";
 
 export const createSupabaseClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-
-  return createClient<Database>(supabaseUrl, supabaseAnonKey);
+  return createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
 };
 
 // Client-side singleton
