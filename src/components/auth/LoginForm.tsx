@@ -43,16 +43,31 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
     setError("");
 
     try {
-      // Here you would implement the actual login logic
-      console.log("Login data:", formData);
+      // Import dynamically to avoid SSR issues
+      const { getSupabaseClient } = await import("@/lib/supabase/client");
+      const supabase = getSupabaseClient();
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Sign in with Supabase Auth
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
 
-      // Check if email is verified (this would be part of your API response)
-      const isEmailVerified = true; // For demo purposes, change to false to test the error
+      if (signInError) throw signInError;
 
-      if (!isEmailVerified) {
+      // Check if user exists and email is verified
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("email_verified")
+        .eq("id", data.user?.id)
+        .single();
+
+      if (userError) throw userError;
+
+      if (!userData.email_verified) {
+        // Sign out if email is not verified
+        await supabase.auth.signOut();
         setError(
           "Email chưa được xác thực. Vui lòng kiểm tra hộp thư đến của bạn và nhấp vào liên kết xác thực.",
         );
@@ -61,12 +76,12 @@ const LoginForm = ({ onSuccess = () => {} }: LoginFormProps) => {
 
       // Redirect to dashboard after successful login
       window.location.href = "/dashboard";
-
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
       setError(
-        "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu của bạn.",
+        error.message ||
+          "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu của bạn.",
       );
     } finally {
       setIsLoading(false);

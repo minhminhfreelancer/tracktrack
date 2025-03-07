@@ -46,17 +46,29 @@ const RegisterForm = ({ onSuccess = () => {} }: RegisterFormProps) => {
     setError("");
 
     try {
-      // Here you would implement the actual registration logic
-      console.log("Registration data:", formData);
+      // Import dynamically to avoid SSR issues
+      const { getSupabaseClient } = await import("@/lib/supabase/client");
+      const supabase = getSupabaseClient();
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Register the user with Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+            website: formData.website || null,
+          },
+        },
+      });
 
-      // Show success message instead of immediately calling onSuccess
+      if (signUpError) throw signUpError;
+
+      // Show success message
       setIsSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
-      setError("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
+      setError(error.message || "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }

@@ -23,13 +23,37 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        // Here you would implement the actual verification logic with the token
-        // For example: await fetch('/api/verify-email', { method: 'POST', body: JSON.stringify({ token }) });
+        if (!token) {
+          setVerificationStatus("error");
+          return;
+        }
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Import dynamically to avoid SSR issues
+        const { getSupabaseClient } = await import("@/lib/supabase/client");
+        const supabase = getSupabaseClient();
 
-        // For demo purposes, we'll consider it successful
+        // Verify the user's email with the token
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: token,
+          type: "email",
+        });
+
+        if (error) throw error;
+
+        // Update the user's email_verified status in the database
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          const { error: updateError } = await supabase
+            .from("users")
+            .update({ email_verified: true })
+            .eq("id", user.id);
+
+          if (updateError) throw updateError;
+        }
+
         setVerificationStatus("success");
       } catch (error) {
         console.error("Email verification error:", error);
@@ -37,11 +61,7 @@ export default function VerifyEmailPage() {
       }
     };
 
-    if (token) {
-      verifyEmail();
-    } else {
-      setVerificationStatus("error");
-    }
+    verifyEmail();
   }, [token]);
 
   return (
