@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,43 +17,8 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Create a Supabase client for auth checks
+  // Create a response
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res });
-
-  // Check authentication for protected routes
-  if (pathname.startsWith("/dashboard")) {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      // Redirect to login if not authenticated
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    // Check if user exists in our database
-    const { data: userData, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
-
-    if (error || !userData) {
-      // Sign out if user doesn't exist in our database
-      await supabase.auth.signOut();
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    // Check if email is verified
-    if (!userData.email_verified) {
-      // Sign out if email is not verified
-      await supabase.auth.signOut();
-      return NextResponse.redirect(
-        new URL("/login?error=email_not_verified", request.url),
-      );
-    }
-  }
 
   // Specific logic for the API domain (tracktrack.pages.dev)
   if (hostname.includes("tracktrack.pages.dev")) {
