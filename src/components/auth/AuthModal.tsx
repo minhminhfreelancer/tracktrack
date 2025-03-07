@@ -32,13 +32,21 @@ const AuthModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-md"
+        aria-describedby="auth-modal-description"
+      >
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold">
             {activeTab === "login" && "Đăng nhập"}
             {activeTab === "register" && "Đăng ký tài khoản"}
             {activeTab === "forgot-password" && "Quên mật khẩu"}
           </DialogTitle>
+          <p id="auth-modal-description" className="sr-only">
+            {activeTab === "login" && "Đăng nhập vào tài khoản của bạn"}
+            {activeTab === "register" && "Tạo tài khoản mới"}
+            {activeTab === "forgot-password" && "Khôi phục mật khẩu của bạn"}
+          </p>
         </DialogHeader>
 
         {(activeTab === "login" || activeTab === "register") && (
