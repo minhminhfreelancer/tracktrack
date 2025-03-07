@@ -29,7 +29,7 @@ export function VisitorStatus({
 
       const { data, error } = await supabase
         .from("tracking_events")
-        .select("ip_address")
+        .select("ip_address, created_at")
         .eq("site_id", siteId)
         .gt("created_at", fiveMinutesAgo)
         .order("created_at", { ascending: false });
@@ -93,11 +93,30 @@ export function VisitorStatus({
             <p className="text-sm text-muted-foreground">người dùng</p>
           </div>
           <div className="text-xs text-muted-foreground">
-            Cập nhật: {lastChecked.toLocaleTimeString("vi-VN")}
+            Cập nhật:{" "}
+            {lastChecked.toLocaleTimeString("vi-VN", {
+              timeZone: "Asia/Bangkok",
+            })}
           </div>
         </div>
         <div className="mt-2 text-xs text-muted-foreground">
           Dựa trên hoạt động trong 5 phút qua
+        </div>
+        <div className="mt-4 pt-2 border-t border-border">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Trạng thái:</span>
+            <span
+              className={
+                activeVisitors > 0
+                  ? "text-green-500 font-medium"
+                  : "text-muted-foreground"
+              }
+            >
+              {activeVisitors > 0
+                ? "Có người đang online"
+                : "Không có người online"}
+            </span>
+          </div>
         </div>
       </CardContent>
     </Card>
