@@ -15,8 +15,9 @@ export function TroubleshootingGuide() {
     var trackingOptions = ["visitor_metrics","network_provider","connection_type","os_version","screen_dimensions","phone_clicks","zalo_clicks","messenger_clicks"];
     var scriptElement = document.createElement('script');
     scriptElement.async = true;
-    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker-update.js?id=' + encodeURIComponent(window.location.hostname) + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
+    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker-update.js?id=' + encodeURIComponent(window.location.hostname || 'test-site') + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
     document.head.appendChild(scriptElement);
+    console.log('TrackTrack script loaded for: ' + window.location.hostname);
   })();
 </script>`;
 
@@ -25,8 +26,9 @@ export function TroubleshootingGuide() {
     var trackingOptions = ["visitor_metrics","network_provider","connection_type","os_version","screen_dimensions","phone_clicks","zalo_clicks","messenger_clicks"];
     var scriptElement = document.createElement('script');
     scriptElement.async = true;
-    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker-update.js?id=' + encodeURIComponent(window.location.hostname) + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
+    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker-update.js?id=' + encodeURIComponent(window.location.hostname || 'test-site') + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
     document.head.appendChild(scriptElement);
+    console.log('TrackTrack script loaded for: ' + window.location.hostname);
   })();
 </script>`;
 

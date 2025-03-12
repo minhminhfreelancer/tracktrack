@@ -150,29 +150,57 @@
     // Log tracking data to console for debugging
     console.log("Tracking data:", payload);
 
-    // Use the correct API endpoint
+    // Use the correct API endpoint with full URL
     const apiUrl = "https://tracktrack-dun.vercel.app/api/track";
+
+    // Create a debug element to show tracking status
+    const debugElement = document.createElement("div");
+    debugElement.style.position = "fixed";
+    debugElement.style.bottom = "10px";
+    debugElement.style.right = "10px";
+    debugElement.style.padding = "5px";
+    debugElement.style.background = "rgba(0,0,0,0.7)";
+    debugElement.style.color = "white";
+    debugElement.style.fontSize = "10px";
+    debugElement.style.zIndex = "9999";
+    debugElement.style.borderRadius = "3px";
+    debugElement.textContent = "Đang gửi dữ liệu theo dõi...";
+    document.body.appendChild(debugElement);
 
     // Always use fetch API for more reliable tracking
     fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
       },
       body: JSON.stringify(payload),
       keepalive: true, // Important for data to be sent even if page is unloading
+      mode: "cors",
+      credentials: "omit",
     })
       .then((response) => {
+        debugElement.textContent = "Phản hồi: " + response.status;
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Network response was not ok: " + response.status);
         }
         return response.json();
       })
       .then((data) => {
         console.log("Tracking data sent successfully:", data);
+        debugElement.textContent = "Đã gửi thành công!";
+        debugElement.style.background = "rgba(0,128,0,0.7)";
+        setTimeout(() => {
+          document.body.removeChild(debugElement);
+        }, 3000);
       })
       .catch((error) => {
         console.error("Error sending tracking data:", error);
+        debugElement.textContent = "Lỗi: " + error.message;
+        debugElement.style.background = "rgba(255,0,0,0.7)";
+        setTimeout(() => {
+          document.body.removeChild(debugElement);
+        }, 5000);
       });
   }
 
