@@ -20,6 +20,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { TroubleshootingGuide } from "@/components/dashboard/TroubleshootingGuide";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -106,7 +107,7 @@ export default function ScriptPage() {
     var trackingOptions = ${JSON.stringify(enabledOptions)};
     var scriptElement = document.createElement('script');
     scriptElement.async = true;
-    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker.js?id=' + encodeURIComponent(window.location.hostname) + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
+    scriptElement.src = 'https://tracktrack-dun.vercel.app/tracker-update.js?id=' + encodeURIComponent(window.location.hostname) + '&options=' + encodeURIComponent(JSON.stringify(trackingOptions));
     document.head.appendChild(scriptElement);
   })();
 </script>`;
@@ -175,7 +176,9 @@ export default function ScriptPage() {
             </div>
           </div>
 
-          <div className="w-full md:w-3/4">
+          <div className="w-full md:w-3/4 space-y-6">
+            <TroubleshootingGuide />
+
             <Card>
               <CardHeader>
                 <CardTitle>Tạo mã nhúng theo dõi</CardTitle>
