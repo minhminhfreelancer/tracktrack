@@ -16,7 +16,11 @@ export async function POST(req: NextRequest) {
     const clientIP =
       req.headers.get("CF-Connecting-IP") ||
       req.headers.get("X-Forwarded-For") ||
+      req.headers.get("X-Real-IP") ||
       "unknown";
+
+    console.log("Client IP:", clientIP);
+    console.log("Headers:", Object.fromEntries(req.headers.entries()));
 
     if (eventData.ip === "") {
       eventData.ip = clientIP;

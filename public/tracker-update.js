@@ -153,20 +153,27 @@
     // Use the correct API endpoint
     const apiUrl = "https://tracktrack-dun.vercel.app/api/track";
 
-    if (navigator.sendBeacon && typeof navigator.sendBeacon === "function") {
-      // Use Beacon API if available (doesn't block page unload)
-      navigator.sendBeacon(apiUrl, JSON.stringify(payload));
-    } else {
-      // Fallback to fetch API
-      fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        keepalive: true, // Important for data to be sent even if page is unloading
-      }).catch((error) => console.error("Error sending tracking data:", error));
-    }
+    // Always use fetch API for more reliable tracking
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      keepalive: true, // Important for data to be sent even if page is unloading
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Tracking data sent successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error sending tracking data:", error);
+      });
   }
 
   // Initialize tracking

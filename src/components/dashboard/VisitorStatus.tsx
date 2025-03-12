@@ -24,14 +24,15 @@ export function VisitorStatus({
       const { createSupabaseClient } = await import("@/lib/supabase/client");
       const supabase = createSupabaseClient();
 
-      // Lấy các sự kiện trong 5 phút gần đây
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      // Lấy các sự kiện trong 10 phút gần đây để có nhiều dữ liệu hơn
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      console.log("Thời gian bắt đầu:", tenMinutesAgo);
 
       const { data, error } = await supabase
         .from("tracking_events")
-        .select("ip_address, created_at")
+        .select("ip_address, created_at, event_type")
         .eq("site_id", siteId)
-        .gt("created_at", fiveMinutesAgo)
+        .gt("created_at", tenMinutesAgo)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -44,6 +45,14 @@ export function VisitorStatus({
         }
       });
 
+      console.log(
+        "Số lượng IP duy nhất:",
+        uniqueIPs.size,
+        "từ",
+        data?.length || 0,
+        "sự kiện",
+      );
+      console.log("IP duy nhất:", Array.from(uniqueIPs));
       setActiveVisitors(uniqueIPs.size);
     } catch (error) {
       console.error("Error fetching active visitors:", error);
@@ -103,7 +112,7 @@ export function VisitorStatus({
           </div>
         </div>
         <div className="mt-2 text-xs text-muted-foreground">
-          Dựa trên hoạt động trong 5 phút qua
+          Dựa trên hoạt động trong 10 phút qua
         </div>
         <div className="mt-4 pt-2 border-t border-border">
           <div className="flex items-center justify-between text-sm">
