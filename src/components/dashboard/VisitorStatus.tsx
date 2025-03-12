@@ -47,8 +47,11 @@ export function VisitorStatus({
       setActiveVisitors(uniqueIPs.size);
     } catch (error) {
       console.error("Error fetching active visitors:", error);
-      // Fallback to random data for demo
-      setActiveVisitors(Math.floor(Math.random() * 3));
+      // Don't change the value on error, just keep the last known value
+      // If we don't have a value yet, set to 0
+      if (activeVisitors === undefined) {
+        setActiveVisitors(0);
+      }
     } finally {
       setIsLoading(false);
       setLastChecked(new Date());

@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ArrowLeft, BarChart3, Settings, User, RefreshCw } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  ArrowLeft,
+  BarChart3,
+  Settings,
+  User,
+  RefreshCw,
+  AlertTriangle,
+} from "lucide-react";
 import Link from "next/link";
 import {
   TimeRangeSelector,
@@ -277,33 +285,36 @@ export default function Dashboard() {
       } catch (error) {
         console.error("Error fetching data:", error);
 
-        // Fallback to demo data if error occurs
-        const browserInfo = navigator.userAgent;
-        const screenInfo = `${window.screen.width} x ${window.screen.height}`;
+        // Fallback to last known data or zeros if error occurs
+        console.error(
+          "Không thể lấy dữ liệu từ server. Hiển thị dữ liệu cũ hoặc trống.",
+        );
 
-        // Simulate different data based on time range
-        const randomFactor = Math.random() * 0.5 + 0.75; // Random between 0.75 and 1.25
-        const baseClicks =
-          timeRange.type === "realtime"
-            ? 5
-            : timeRange.type === "today"
-              ? 15
-              : timeRange.type === "this_week"
-                ? 45
-                : 80;
+        // Keep the last known data instead of generating random values
+        if (!userData.lastUpdated) {
+          // Only set default values if we don't have any data yet
+          const browserInfo = navigator.userAgent;
+          const screenInfo = `${window.screen.width} x ${window.screen.height}`;
 
-        setUserData({
-          ip: "192.168.1.1",
-          browser: browserInfo,
-          provider: "Viettel",
-          connectionType: "WiFi",
-          os: "Windows 11",
-          screenSize: screenInfo,
-          phoneClicks: Math.round(baseClicks * randomFactor),
-          zaloClicks: Math.round(baseClicks * 0.65 * randomFactor),
-          messengerClicks: Math.round(baseClicks * 0.35 * randomFactor),
-          lastUpdated: new Date(),
-        });
+          setUserData({
+            ip: "Không có dữ liệu",
+            browser: browserInfo,
+            provider: "Không có dữ liệu",
+            connectionType: "Không có dữ liệu",
+            os: "Không có dữ liệu",
+            screenSize: screenInfo,
+            phoneClicks: 0,
+            zaloClicks: 0,
+            messengerClicks: 0,
+            lastUpdated: new Date(),
+          });
+        } else {
+          // Just update the timestamp if we already have data
+          setUserData({
+            ...userData,
+            lastUpdated: new Date(),
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -347,6 +358,15 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Dữ liệu hiển thị là dữ liệu thực từ cơ sở dữ liệu. Nếu không có dữ
+            liệu hoặc có lỗi, hệ thống sẽ hiển thị "Không có dữ liệu" thay vì
+            tạo dữ liệu ngẫu nhiên.
+          </AlertDescription>
+        </Alert>
+
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-bold">Thống kê người dùng</h2>
